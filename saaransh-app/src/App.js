@@ -356,18 +356,38 @@ const AuthView = ({ setIsAuthenticated, setView }) => {
 
     return (
         <div className="min-h-screen bg-slate-100 flex items-center justify-center p-4" style={{backgroundImage: `url('https://www.toptal.com/designers/subtlepatterns/uploads/double-bubble-outline.png')`}}>
-            <div className="w-full max-w-4xl mx-auto grid grid-cols-1 lg:grid-cols-2 bg-white shadow-2xl rounded-2xl overflow-hidden">
-                <div className="p-8 sm:p-12">
-                     <img src="https://raw.githubusercontent.com/Ishaan145/Saaransh/main/saaransh-app/public/mca.png" alt="MCA Emblem" className="h-12 mb-6"/>
-                     {renderAuthContent()}
+            <div className="w-full max-w-5xl mx-auto grid grid-cols-1 lg:grid-cols-2 bg-white shadow-2xl rounded-2xl overflow-hidden">
+                <div className="p-8 sm:p-12 flex flex-col justify-between">
+                    <div className="text-center">
+                        <img src="https://raw.githubusercontent.com/Ishaan145/Saaransh/main/saaransh-app/public/mca.png" alt="MCA Emblem" className="h-20 mb-6 mx-auto"/>
+                        {renderAuthContent()}
+                    </div>
+                    <div className="mt-8">
+                        <h3 className="text-center text-sm font-semibold text-slate-600 mb-3">Quick Government Portals</h3>
+                        <div className="flex flex-wrap justify-center gap-x-4 gap-y-2 text-xs text-slate-500">
+                            <a href="https://www.pmindia.gov.in/en/" target="_blank" rel="noopener noreferrer" className="hover:underline hover:text-blue-600">PMO India</a>
+                            <span className="select-none">|</span>
+                            <a href="https://www.mca.gov.in/" target="_blank" rel="noopener noreferrer" className="hover:underline hover:text-blue-600">Ministry of Corporate Affairs</a>
+                            <span className="select-none">|</span>
+                            <a href="https://presidentofindia.nic.in/" target="_blank" rel="noopener noreferrer" className="hover:underline hover:text-blue-600">President of India</a>
+                            <span className="select-none">|</span>
+                            <a href="https://www.mygov.in/" target="_blank" rel="noopener noreferrer" className="hover:underline hover:text-blue-600">MyGov</a>
+                            <span className="select-none">|</span>
+                            <a href="https://pgportal.gov.in/" target="_blank" rel="noopener noreferrer" className="hover:underline hover:text-blue-600">Public Grievance Portal</a>
+                        </div>
+                    </div>
                 </div>
                 <div className="hidden lg:block bg-slate-800 p-12 text-white bg-cover bg-center" style={{backgroundImage: `url('https://images.unsplash.com/photo-1554224155-169544351720?q=80&w=2070&auto=format&fit=crop')`}}>
-                    <div className="bg-slate-900 bg-opacity-60 p-8 rounded-lg">
+                    <div className="bg-slate-900 bg-opacity-60 p-8 rounded-lg flex flex-col h-full">
                         <h2 className="text-3xl font-bold mb-4">Project Saaransh</h2>
                         <p className="text-slate-300 mb-8">AI-Powered analysis for transparent and responsive corporate governance.</p>
                         <div className="space-y-6">
                             <div className="flex items-start"><CheckCircle className="h-6 w-6 text-emerald-400 mr-3 flex-shrink-0 mt-1" /><div><h3 className="font-semibold">Comprehensive Insights</h3><p className="text-slate-400 text-sm">Leverage state-of-the-art AI to understand public sentiment, stance, and key themes from thousands of submissions instantly.</p></div></div>
                             <div className="flex items-start"><Shield className="h-6 w-6 text-emerald-400 mr-3 flex-shrink-0 mt-1" /><div><h3 className="font-semibold">Secure & Auditable</h3><p className="text-slate-400 text-sm">Built for government use with end-to-end security, access controls, and a fully auditable analysis trail.</p></div></div>
+                        </div>
+                        <div className="mt-auto text-center">
+                            <img src="https://raw.githubusercontent.com/Ishaan145/Saaransh/main/saaransh-app/public/mca1.png" alt="Digital India Logo" className="mx-auto h-14"/>
+                             <p className="text-xs text-slate-400 mt-4">&copy; 2025 Ministry of Corporate Affairs</p>
                         </div>
                     </div>
                 </div>
@@ -496,7 +516,7 @@ export default function App() {
     <div className="bg-slate-100 min-h-screen font-sans text-slate-800">
       {modalView === 'changePassword' && <ChangePasswordModal onClose={() => setModalView(null)} />}
       {modalView === 'manage2FA' && <Manage2FAModal onClose={() => setModalView(null)} />}
-      {modalView === 'generateReport' && <GenerateReportModal onClose={() => setModalView(null)} consultationTitle={currentConsultation.title}/>}
+      {modalView === 'generateReport' && currentConsultation && <GenerateReportModal onClose={() => setModalView(null)} consultationTitle={currentConsultation.title}/>}
       
       <Header setView={setView} setIsAuthenticated={setIsAuthenticated} toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} isSidebarOpen={isSidebarOpen} userSession={userSession}/>
       <Sidebar selectedConsultation={selectedConsultation} setSelectedConsultation={setSelectedConsultation} view={view} setView={setView} isSidebarOpen={isSidebarOpen} setIsSidebarOpen={setIsSidebarOpen} />
