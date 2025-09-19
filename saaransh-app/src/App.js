@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { PieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, Legend } from 'recharts';
-import { Home, ChevronDown, Search, FileText, Calendar, Users, ChevronsRight, Mail, Bell, ArrowLeft, TrendingUp, Filter, Star, Languages, Clock, User, Settings, Shield, LogOut, Lock, AtSign, Eye, EyeOff, AlertTriangle, Menu, X } from 'lucide-react';
+import { Home, ChevronDown, Search, FileText, Calendar, Users, ChevronsRight, Mail, Bell, ArrowLeft, TrendingUp, Filter, Star, Languages, Clock, User, Settings, Shield, LogOut, Lock, AtSign, Eye, EyeOff, AlertTriangle, Menu, X, CheckCircle, Smartphone } from 'lucide-react';
 
 // --- MOCK DATA --- //
 // This data simulates what would be fetched from a secure API in a real application.
@@ -54,6 +54,7 @@ const Header = ({ setView, setIsAuthenticated, toggleSidebar, isSidebarOpen }) =
     const handleLogout = () => {
         setIsAuthenticated(false);
         setIsProfileOpen(false);
+        setView('auth'); // Redirect to auth page on logout
     };
 
     return (
@@ -62,7 +63,7 @@ const Header = ({ setView, setIsAuthenticated, toggleSidebar, isSidebarOpen }) =
                 <button onClick={toggleSidebar} className="lg:hidden mr-3 text-slate-600 hover:text-slate-800">
                     {isSidebarOpen ? <X size={24}/> : <Menu size={24}/>}
                 </button>
-                <img src={"/saaransh-app/mca.png"} alt="MCA Emblem" className="h-10 mr-2 sm:mr-4"/>
+                <img src="https://raw.githubusercontent.com/Ishaan145/Saaransh/main/saaransh-app/public/mca.png" alt="MCA Emblem" className="h-10 mr-2 sm:mr-4"/>
                 <h1 className="text-lg sm:text-xl font-semibold text-slate-800">Project Saaransh</h1>
             </div>
             <div className="flex items-center space-x-2 sm:space-x-5">
@@ -157,9 +158,9 @@ const StanceChart = ({ data, title = "Overall Stance" }) => (
 const WordCloud = ({ data }) => {
     if (!data || data.length === 0) {
         return (
-            <div className="bg-white p-6 rounded-xl border border-slate-200 h-full">
+            <div className="bg-white p-6 rounded-xl border border-slate-200 h-full flex flex-col">
                 <h3 className="text-lg font-semibold text-slate-800 mb-4">Salient Themes</h3>
-                <div className="flex items-center justify-center h-full text-slate-500">No theme data available.</div>
+                <div className="flex-grow flex items-center justify-center h-full text-slate-500">No theme data available.</div>
             </div>
         );
     }
@@ -291,24 +292,113 @@ const HomeView = ({ setView, setSelectedConsultation, setSelectedComment }) => {
     const allComments = useMemo(() => Object.values(commentsData).flat(), []);
     const highPriorityComments = allComments.filter(c => c.qualityScore >= 4.5).slice(0, 3);
     return (<div><h2 className="text-2xl font-bold text-slate-800 mb-6">Welcome back, Ishaan</h2>{showNotification && <SecurityNotification onDismiss={() => setShowNotification(false)} />}<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"><StatCard title="Total Submissions" value={allComments.length} icon={FileText} color="bg-blue-500" /><StatCard title="Total Consultations" value={consultations.length} icon={Users} color="bg-emerald-500" /><StatCard title="Active Consultations" value={consultations.filter(c => c.status === 'In Progress').length} icon={Clock} color="bg-amber-500" /><StatCard title="High Priority Items" value={highPriorityComments.length} icon={Bell} color="bg-red-500" /></div><div className="grid grid-cols-1 lg:grid-cols-5 gap-6 mt-6"><div className="lg:col-span-2"><StanceChart data={allComments} title="Overall Stance (All Time)" /></div><div className="lg:col-span-3"><div className="bg-white p-6 rounded-xl border border-slate-200 h-full"><h3 className="text-lg font-semibold text-slate-800 mb-4">High Priority Submissions</h3><div className="space-y-4">{highPriorityComments.map(c => (<div key={c.id} className="p-3 bg-slate-50 rounded-lg border border-slate-200"><div className="flex justify-between items-start"><p className="font-semibold text-slate-800">{c.submitter}</p><span className={`px-2 py-1 text-xs font-medium rounded-full ${STANCE_BG_COLORS[c.stance]}`}>{c.stance}</span></div><p className="text-sm text-slate-600 mt-2 truncate">{c.summary}</p><div className="flex justify-between items-center mt-3"><div className="flex items-center"><Star size={14} className="text-amber-400 fill-current mr-1" /><span className="text-sm font-bold text-slate-700">{c.qualityScore}</span></div><button onClick={() => { setSelectedComment(c); setView('detail'); setSelectedConsultation(c.consultationId)}} className="text-sm font-medium text-blue-600 hover:underline">View Details</button></div></div>))}</div></div></div></div></div>);};
-const UserProfileView = () => (<div><h2 className="text-2xl font-bold text-slate-800 mb-6">My Profile</h2><div className="grid grid-cols-1 lg:grid-cols-3 gap-6"><div className="lg:col-span-1"><div className="bg-white p-6 rounded-xl border border-slate-200 text-center"><img src="https://placehold.co/120x120/E2E8F0/475569?text=I" alt="User Avatar" className="rounded-full h-32 w-32 border-4 border-white shadow-md mx-auto -mt-16" /><h3 className="text-xl font-bold text-slate-800 mt-4">Ishaan Saxena</h3><p className="text-slate-500">Policy Analyst</p><button className="mt-4 w-full bg-blue-100 text-blue-700 font-semibold py-2 px-4 rounded-lg hover:bg-blue-200 text-sm">Change Profile Picture</button></div></div><div className="lg:col-span-2"><div className="bg-white p-6 rounded-xl border border-slate-200"><h3 className="text-lg font-semibold text-slate-800 mb-4">Account Details</h3><div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm"><div><p className="text-slate-500">Email:</p><p className="font-medium text-slate-800">ishaan.saxena@mca.gov.in</p></div><div><p className="text-slate-500">Employee ID:</p><p className="font-medium text-slate-800">MCA-AN-0845</p></div><div><p className="text-slate-500">Department:</p><p className="font-medium text-slate-800">Policy & Research Wing</p></div></div><h3 className="text-lg font-semibold text-slate-800 mt-6 mb-4">Security Settings</h3><div className="space-y-3"><button className="text-sm w-full text-left font-medium text-slate-700 p-3 bg-slate-50 rounded-lg border hover:bg-slate-100">Change Password</button><button className="text-sm w-full text-left font-medium text-slate-700 p-3 bg-slate-50 rounded-lg border hover:bg-slate-100">Manage Two-Factor Authentication (2FA)</button></div></div></div></div></div>);
+
+// --- AUTHENTICATION & SECURITY COMPONENTS --- //
+
+const AuthView = ({ setIsAuthenticated, setView }) => {
+    const [authMode, setAuthMode] = useState('login'); // login, forgotPassword
+
+    const renderAuthContent = () => {
+        if (authMode === 'login') {
+            return <LoginPanel setIsAuthenticated={setIsAuthenticated} setAuthMode={setAuthMode} />;
+        }
+        if (authMode === 'forgotPassword') {
+            return <ForgotPasswordPanel setAuthMode={setAuthMode} />;
+        }
+    };
+
+    return (
+        <div className="min-h-screen bg-slate-100 flex items-center justify-center p-4" style={{backgroundImage: `url('https://www.toptal.com/designers/subtlepatterns/uploads/double-bubble-outline.png')`}}>
+            <div className="w-full max-w-4xl mx-auto grid grid-cols-1 lg:grid-cols-2 bg-white shadow-2xl rounded-2xl overflow-hidden">
+                <div className="p-8 sm:p-12">
+                     <img src="./mca.png" alt="MCA Emblem" className="h-12 mb-6"/>
+                     {renderAuthContent()}
+                </div>
+                <div className="hidden lg:block bg-slate-800 p-12 text-white">
+                    <h2 className="text-3xl font-bold mb-4">Project Saaransh</h2>
+                    <p className="text-slate-300 mb-8">AI-Powered analysis for transparent and responsive corporate governance.</p>
+                    <div className="space-y-6">
+                        <div className="flex items-start"><CheckCircle className="h-6 w-6 text-emerald-400 mr-3 flex-shrink-0 mt-1" /><div><h3 className="font-semibold">Comprehensive Insights</h3><p className="text-slate-400 text-sm">Leverage state-of-the-art AI to understand public sentiment, stance, and key themes from thousands of submissions instantly.</p></div></div>
+                        <div className="flex items-start"><Shield className="h-6 w-6 text-emerald-400 mr-3 flex-shrink-0 mt-1" /><div><h3 className="font-semibold">Secure & Auditable</h3><p className="text-slate-400 text-sm">Built for government use with end-to-end security, access controls, and a fully auditable analysis trail.</p></div></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+};
+
+const LoginPanel = ({ setIsAuthenticated, setAuthMode }) => {
+    const [step, setStep] = useState(1); const [email] = useState("ishaan.saxena@mca.gov.in"); const [password] = useState("password"); const [showPassword, setShowPassword] = useState(false); const [otp, setOtp] = useState(""); const [error, setError] = useState("");
+    const handleNext = (e) => { e.preventDefault(); setError(""); if (step === 1 && email) setStep(2); if (step === 2 && password) setStep(3); if (step === 3 && otp === "123456") { setIsAuthenticated(true); } else if (step === 3) { setError("Invalid OTP. Please try again."); }};
+    return (<>
+        <h2 className="text-2xl font-bold text-slate-800 mb-2">Secure Sign In</h2>
+        <p className="text-slate-500 mb-6 text-sm">Enter your official credentials to access the portal.</p>
+        {error && <p className="text-red-500 text-sm text-center mb-4 bg-red-50 p-3 rounded-lg">{error}</p>}
+        <form onSubmit={handleNext} className="space-y-5">
+            {step === 1 && (<div><label className="block text-slate-700 text-sm font-bold mb-2" htmlFor="email">Email Address</label><div className="relative"><AtSign className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" /><input defaultValue={email} className="shadow-sm appearance-none border rounded-lg w-full py-2.5 pl-10 pr-3 text-slate-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500" id="email" type="email" /></div></div>)}
+            {step === 2 && (<div><label className="block text-slate-700 text-sm font-bold mb-2" htmlFor="password">Password</label><div className="relative"><Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" /><input defaultValue={password} className="shadow-sm appearance-none border rounded-lg w-full py-2.5 pl-10 pr-10 text-slate-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500" id="password" type={showPassword ? "text" : "password"} /><button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600">{showPassword ? <EyeOff size={20}/> : <Eye size={20}/>}</button></div></div>)}
+            {step === 3 && (<div><label className="block text-slate-700 text-sm font-bold mb-2" htmlFor="otp">One-Time Password (OTP)</label><p className="text-xs text-slate-500 mb-2">An OTP has been sent to your email. (Hint: 123456)</p><input value={otp} onChange={(e) => setOtp(e.target.value)} className="shadow-sm appearance-none border rounded-lg w-full py-2.5 px-3 text-slate-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500" id="otp" type="text" /></div>)}
+            <button className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 px-4 rounded-lg focus:outline-none focus:shadow-outline w-full" type="submit">{step === 1 && "Continue"}{step === 2 && "Sign In"}{step === 3 && "Verify & Sign In"}</button>
+            <div className="text-center"><a href="#" onClick={(e) => {e.preventDefault(); setAuthMode('forgotPassword')}} className="text-xs text-blue-600 hover:underline mt-2 inline-block">Forgot Password?</a></div>
+        </form>
+    </>);
+};
+
+const ForgotPasswordPanel = ({ setAuthMode }) => {
+    const [step, setStep] = useState(1); const [email] = useState("ishaan.saxena@mca.gov.in"); const [otp, setOtp] = useState(""); const [newPassword, setNewPassword] = useState(""); const [confirmPassword, setConfirmPassword] = useState(""); const [message, setMessage] = useState("");
+    const handleSubmit = (e) => { e.preventDefault(); setMessage(""); if (step === 1) { setMessage("An OTP has been sent to your email."); setStep(2); } if (step === 2 && otp === "123456") { setMessage(""); setStep(3); } if (step === 3 && newPassword === confirmPassword && newPassword) { setMessage("Password successfully reset! You can now log in."); setStep(4); }};
+    return (<>
+        <h2 className="text-2xl font-bold text-slate-800 mb-2">Reset Password</h2>
+        <p className="text-slate-500 mb-6 text-sm">{step < 4 ? "Enter your details to recover your account." : ""}</p>
+        {message && <p className={`text-sm text-center mb-4 p-3 rounded-lg ${step === 4 ? 'bg-green-50 text-green-700' : 'bg-blue-50 text-blue-700'}`}>{message}</p>}
+        <form onSubmit={handleSubmit} className="space-y-5">
+            {step === 1 && (<div><label className="block text-slate-700 text-sm font-bold mb-2" htmlFor="email-forgot">Email Address</label><div className="relative"><AtSign className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" /><input defaultValue={email} className="shadow-sm appearance-none border rounded-lg w-full py-2.5 pl-10 pr-3 text-slate-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500" id="email-forgot" type="email" /></div></div>)}
+            {step === 2 && (<div><label className="block text-slate-700 text-sm font-bold mb-2" htmlFor="otp-forgot">Enter OTP</label><input value={otp} onChange={(e) => setOtp(e.target.value)} className="shadow-sm appearance-none border rounded-lg w-full py-2.5 px-3 text-slate-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500" id="otp-forgot" type="text" /></div>)}
+            {step === 3 && (<><label className="block text-slate-700 text-sm font-bold mb-2">New Password</label><input value={newPassword} onChange={(e) => setNewPassword(e.target.value)} className="shadow-sm border rounded-lg w-full py-2.5 px-3" type="password" /><label className="block text-slate-700 text-sm font-bold mb-2 mt-4">Confirm New Password</label><input value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} className="shadow-sm border rounded-lg w-full py-2.5 px-3" type="password" /></>)}
+            {step < 4 && <button className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 px-4 rounded-lg w-full" type="submit">{step === 1 ? "Send OTP" : step === 2 ? "Verify OTP" : "Reset Password"}</button>}
+            <div className="text-center"><a href="#" onClick={(e) => {e.preventDefault(); setAuthMode('login')}} className="text-xs text-blue-600 hover:underline mt-2 inline-block">Back to Sign In</a></div>
+        </form>
+    </>);
+};
+
+const Modal = ({ children, onClose }) => (<div className="fixed inset-0 bg-black bg-opacity-50 z-30 flex justify-center items-center p-4"><div className="bg-white rounded-xl shadow-2xl w-full max-w-md"><div className="p-6">{children}</div></div></div>);
+const ChangePasswordModal = ({ onClose }) => (
+    <Modal onClose={onClose}>
+        <h3 className="text-lg font-bold text-slate-800 mb-4">Change Password</h3>
+        <form className="space-y-4">
+            <div><label className="block text-sm font-medium text-slate-700">Old Password</label><input type="password" className="mt-1 block w-full px-3 py-2 bg-white border border-slate-300 rounded-md shadow-sm"/></div>
+            <div><label className="block text-sm font-medium text-slate-700">New Password</label><input type="password" className="mt-1 block w-full px-3 py-2"/></div>
+            <div><label className="block text-sm font-medium text-slate-700">Confirm New Password</label><input type="password" className="mt-1 block w-full px-3 py-2"/></div>
+            <div className="flex justify-end gap-3 pt-4"><button type="button" onClick={onClose} className="bg-slate-100 text-slate-700 px-4 py-2 rounded-lg">Cancel</button><button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded-lg">Update Password</button></div>
+        </form>
+    </Modal>
+);
+const Manage2FAModal = ({ onClose }) => (
+    <Modal onClose={onClose}>
+        <h3 className="text-lg font-bold text-slate-800 mb-4">Two-Factor Authentication (2FA)</h3>
+        <div className="flex items-center p-4 bg-green-50 text-green-800 rounded-lg"><CheckCircle className="h-6 w-6 mr-3"/><p className="font-semibold">2FA is currently enabled on your account.</p></div>
+        <div className="mt-4 text-sm text-slate-600"><p>Two-factor authentication adds an extra layer of security to your account by requiring more than just a password to sign in. You currently have it configured with an authenticator app.</p></div>
+        <div className="flex flex-col sm:flex-row gap-3 pt-4 mt-4 border-t">
+            <button className="w-full bg-slate-100 text-slate-700 px-4 py-2 rounded-lg text-sm flex items-center justify-center"><Smartphone className="mr-2 h-4 w-4"/>View Recovery Codes</button>
+            <button className="w-full bg-red-100 text-red-700 px-4 py-2 rounded-lg text-sm">Disable 2FA</button>
+            <button type="button" onClick={onClose} className="w-full bg-blue-600 text-white px-4 py-2 rounded-lg text-sm">Done</button>
+        </div>
+    </Modal>
+);
+
+const UserProfileView = ({ setModalView }) => (<div><h2 className="text-2xl font-bold text-slate-800 mb-6">My Profile</h2><div className="grid grid-cols-1 lg:grid-cols-3 gap-6"><div className="lg:col-span-1"><div className="bg-white p-6 rounded-xl border border-slate-200 text-center"><img src="https://placehold.co/120x120/E2E8F0/475569?text=I" alt="User Avatar" className="rounded-full h-32 w-32 border-4 border-white shadow-md mx-auto -mt-16" /><h3 className="text-xl font-bold text-slate-800 mt-4">Ishaan Saxena</h3><p className="text-slate-500">Policy Analyst</p><button className="mt-4 w-full bg-blue-100 text-blue-700 font-semibold py-2 px-4 rounded-lg hover:bg-blue-200 text-sm">Change Profile Picture</button></div></div><div className="lg:col-span-2"><div className="bg-white p-6 rounded-xl border border-slate-200"><h3 className="text-lg font-semibold text-slate-800 mb-4">Account Details</h3><div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm"><div><p className="text-slate-500">Email:</p><p className="font-medium text-slate-800">ishaan.saxena@mca.gov.in</p></div><div><p className="text-slate-500">Employee ID:</p><p className="font-medium text-slate-800">MCA-AN-0845</p></div><div><p className="text-slate-500">Department:</p><p className="font-medium text-slate-800">Policy & Research Wing</p></div></div><h3 className="text-lg font-semibold text-slate-800 mt-6 mb-4">Security Settings</h3><div className="space-y-3"><button onClick={() => setModalView('changePassword')} className="text-sm w-full text-left font-medium text-slate-700 p-3 bg-slate-50 rounded-lg border hover:bg-slate-100">Change Password</button><button onClick={() => setModalView('manage2FA')} className="text-sm w-full text-left font-medium text-slate-700 p-3 bg-slate-50 rounded-lg border hover:bg-slate-100">Manage Two-Factor Authentication (2FA)</button></div></div></div></div></div>);
 const SettingsView = () => (<div><h2 className="text-2xl font-bold text-slate-800 mb-6">User Settings</h2><div className="bg-white p-8 rounded-xl border border-slate-200 max-w-2xl mx-auto"><h3 className="text-lg font-semibold text-slate-800 mb-4">Notifications</h3><div className="space-y-4"><div className="flex items-center justify-between p-4 bg-slate-50 rounded-lg"><label htmlFor="new-consultation" className="font-medium text-slate-700">Email for new consultations</label><div className="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in"><input type="checkbox" name="toggle" id="new-consultation" className="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer"/><label htmlFor="new-consultation" className="toggle-label block overflow-hidden h-6 rounded-full bg-slate-300 cursor-pointer"></label></div></div><div className="flex items-center justify-between p-4 bg-slate-50 rounded-lg"><label htmlFor="analysis-complete" className="font-medium text-slate-700">Notify when analysis is complete</label><div className="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in"><input type="checkbox" name="toggle" id="analysis-complete" className="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer" defaultChecked/><label htmlFor="analysis-complete" className="toggle-label block overflow-hidden h-6 rounded-full bg-slate-300 cursor-pointer"></label></div></div></div><style>{`.toggle-checkbox:checked { right: 0; border-color: #3b82f6; } .toggle-checkbox:checked + .toggle-label { background-color: #3b82f6; }`}</style><div className="border-t border-slate-200 mt-6 pt-6"><button className="bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-700">Save Changes</button></div></div></div>);
 const AuthorizationView = () => (<div><h2 className="text-2xl font-bold text-slate-800 mb-6">Authorizations & Permissions</h2><div className="bg-white p-8 rounded-xl border border-slate-200 max-w-2xl mx-auto"><div className="flex items-center space-x-4 p-4 bg-blue-50 border border-blue-200 rounded-lg"><Shield size={24} className="text-blue-600"/><div><h3 className="font-bold text-blue-800">Your Role: Policy Analyst</h3><p className="text-sm text-blue-700">This role grants you access to view and analyze consultation data.</p></div></div><div className="mt-6"><h4 className="text-md font-semibold text-slate-700 mb-3">Your Permissions:</h4><ul className="list-disc list-inside space-y-2 text-slate-600"><li>View all public submissions.</li><li>Access AI-generated summaries and stance analysis.</li><li>Generate and export reports for active consultations.</li><li className="text-slate-400">Manage user accounts (Admin permission required).</li><li className="text-slate-400">Initiate new consultations (Admin permission required).</li></ul></div></div></div>);
-
-const LoginView = ({ setIsAuthenticated }) => {
-    const [step, setStep] = useState(1); const [email, setEmail] = useState("ishaan.saxena@mca.gov.in"); const [password, setPassword] = useState("password"); const [showPassword, setShowPassword] = useState(false); const [otp, setOtp] = useState(""); const [error, setError] = useState("");
-    const handleNext = (e) => { e.preventDefault(); setError(""); if (step === 1 && email) setStep(2); if (step === 2 && password) setStep(3); if (step === 3 && otp === "123456") { setIsAuthenticated(true); } else if (step === 3) { setError("Invalid OTP. Please try again."); }};
-    return (<div className="min-h-screen bg-slate-100 flex flex-col justify-center items-center p-4"><div className="w-full max-w-md"><div className="text-center mb-8">
-        <img src={"/saaransh-app/mca.png"} alt="MCA Emblem" className="h-12 mx-auto mb-4"/>
-        <h1 className="text-3xl font-bold text-slate-800">Project Saaransh</h1><p className="text-slate-500">MCA E-Consultation Analysis Portal</p></div><div className="bg-white shadow-lg rounded-xl p-8"><h2 className="text-2xl font-semibold text-center text-slate-700 mb-2">Secure Sign In</h2>{error && <p className="text-red-500 text-sm text-center mb-4">{error}</p>}<form onSubmit={handleNext}>{step === 1 && (<div className="mb-4"><label className="block text-slate-700 text-sm font-bold mb-2" htmlFor="email">Email Address</label><div className="relative"><AtSign className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" /><input value={email} onChange={(e) => setEmail(e.target.value)} className="shadow-sm appearance-none border rounded-lg w-full py-2 pl-10 pr-3 text-slate-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500" id="email" type="email" placeholder="user@mca.gov.in" /></div></div>)}{step === 2 && (<div className="mb-6"><label className="block text-slate-700 text-sm font-bold mb-2" htmlFor="password">Password</label><div className="relative"><Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" /><input value={password} onChange={(e) => setPassword(e.target.value)} className="shadow-sm appearance-none border rounded-lg w-full py-2 pl-10 pr-10 text-slate-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500" id="password" type={showPassword ? "text" : "password"} placeholder="******************" /><button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600">{showPassword ? <EyeOff size={20}/> : <Eye size={20}/>}</button></div><a href="#" className="text-xs text-blue-600 hover:underline mt-2 inline-block">Forgot Password?</a></div>)}{step === 3 && (<div className="mb-4"><label className="block text-slate-700 text-sm font-bold mb-2" htmlFor="otp">One-Time Password (OTP)</label><p className="text-xs text-slate-500 mb-2">An OTP has been sent to your email. (Hint: 123456)</p><input value={otp} onChange={(e) => setOtp(e.target.value)} className="shadow-sm appearance-none border rounded-lg w-full py-2 px-3 text-slate-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500" id="otp" type="text" placeholder="Enter 6-digit OTP" /></div>)}<button className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg focus:outline-none focus:shadow-outline w-full" type="submit">{step === 1 && "Continue"}{step === 2 && "Sign In"}{step === 3 && "Verify & Sign In"}</button></form></div><p className="text-center text-slate-500 text-xs mt-6">This is a secure government system. All activities are monitored.</p><p className="text-center text-slate-500 text-xs mt-6">&copy;2025 Ministry of Corporate Affairs. All rights reserved.</p></div></div>);};
 
 // --- MAIN APP COMPONENT --- //
 export default function App() {
   const [selectedConsultation, setSelectedConsultation] = useState(1);
   const [selectedComment, setSelectedComment] = useState(null);
-  const [view, setView] = useState('home'); // home, dashboard, detail, trends, profile, settings, auth
+  const [view, setView] = useState('auth'); // Default to auth
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [modalView, setModalView] = useState(null); // 'changePassword', 'manage2FA', null
+  
   const currentConsultation = consultations.find(c => c.id === selectedConsultation);
   
   useEffect(() => {
@@ -316,12 +406,18 @@ export default function App() {
     else { document.body.style.overflow = 'auto'; }
   }, [isSidebarOpen]);
 
+  useEffect(() => {
+    if (isAuthenticated && view === 'auth') {
+        setView('home');
+    }
+  }, [isAuthenticated, view]);
+
   const renderContent = () => {
     switch (view) {
       case 'home': return <HomeView setView={setView} setSelectedConsultation={setSelectedConsultation} setSelectedComment={setSelectedComment} />;
       case 'detail': return <DetailView comment={selectedComment} setView={setView} setSelectedConsultation={setSelectedConsultation} />;
       case 'trends': return <TrendAnalysisView />;
-      case 'profile': return <UserProfileView />;
+      case 'profile': return <UserProfileView setModalView={setModalView} />;
       case 'settings': return <SettingsView />;
       case 'auth': return <AuthorizationView />;
       case 'dashboard':
@@ -329,17 +425,22 @@ export default function App() {
     }
   };
 
-  if (!isAuthenticated) { return <LoginView setIsAuthenticated={setIsAuthenticated} /> }
+  if (!isAuthenticated) { return <AuthView setIsAuthenticated={setIsAuthenticated} setView={setView} /> }
 
   return (
     <div className="bg-slate-100 min-h-screen font-sans text-slate-800">
+      {modalView === 'changePassword' && <ChangePasswordModal onClose={() => setModalView(null)} />}
+      {modalView === 'manage2FA' && <Manage2FAModal onClose={() => setModalView(null)} />}
+      
       <Header setView={setView} setIsAuthenticated={setIsAuthenticated} toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} isSidebarOpen={isSidebarOpen}/>
       <Sidebar selectedConsultation={selectedConsultation} setSelectedConsultation={setSelectedConsultation} view={view} setView={setView} isSidebarOpen={isSidebarOpen} setIsSidebarOpen={setIsSidebarOpen} />
+      
       <main className="lg:pl-72 pt-16 transition-all duration-300 ease-in-out">
         <div className="p-4 sm:p-6 lg:p-8">
             {renderContent()}
         </div>
       </main>
+      
       {isSidebarOpen && <div onClick={() => setIsSidebarOpen(false)} className="fixed inset-0 bg-black bg-opacity-30 z-0 lg:hidden"></div>}
     </div>
   );
