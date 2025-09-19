@@ -1,0 +1,89 @@
+/* src/pages/Dashboard.css */
+
+.dashboard-container {
+  padding: 2rem 0;
+}
+
+.section-title {
+    font-size: 1.75rem;
+    font-family: var(--font-family-serif);
+    margin-bottom: 1.5rem;
+    color: var(--color-dark);
+}
+
+/* Stats Grid */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 3rem;
+}
+
+.stat-card {
+  background-color: var(--color-surface);
+  padding: 1.5rem;
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-sm);
+  text-align: center;
+  border-left: 5px solid var(--color-primary);
+}
+
+.stat-card__value {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+.stat-card__label {
+  font-size: 1rem;
+  color: var(--color-text-secondary);
+  font-weight: 500;
+}
+
+/* Issues Table */
+.issues-table-container {
+    background-color: var(--color-surface);
+    padding: 2rem;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-sm);
+}
+
+.issues-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.issues-table th,
+.issues-table td {
+  padding: 1rem;
+  text-align: left;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.issues-table th {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+}
+
+.issues-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.issues-table tbody tr:hover {
+    background-color: var(--color-background);
+}
+
+.status-badge {
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #fff;
+}
+
+.btn--small {
+    padding: 0.25rem 0.75rem;
+    font-size: 0.9rem;
+}
