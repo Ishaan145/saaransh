@@ -1,14 +1,14 @@
 import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { PieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, Legend } from 'recharts';
-import { Home, ChevronDown, Search, FileText, Calendar, Users, ChevronsRight, Mail, Bell, ArrowLeft, TrendingUp, Filter, Star, Languages, Clock, User, Settings, Shield, LogOut, Lock, AtSign, Eye, EyeOff, AlertTriangle, Menu, X } from 'lucide-react';
+import { Home, Search, FileText, Calendar, Users, ChevronsRight, Bell, ArrowLeft, TrendingUp, Star, Languages, Clock, User, Settings, Shield, LogOut, Lock, AtSign, Eye, EyeOff, AlertTriangle, Menu, X, CheckCircle, Smartphone, Download, MapPin } from 'lucide-react';
 
 // --- MOCK DATA --- //
 // This data simulates what would be fetched from a secure API in a real application.
 
 const consultations = [
-  { id: 1, title: 'Draft Companies (Amendment) Bill, 2025', status: 'Analysis Complete', submissions: 1345, endDate: '2025-08-31' },
-  { id: 2, title: 'Rules on Corporate Social Responsibility (CSR)', status: 'In Progress', submissions: 782, endDate: '2025-09-20' },
-  { id: 3, title: 'Insolvency & Bankruptcy Code (Second Amendment)', status: 'Completed', submissions: 2109, endDate: '2025-07-15' },
+  { id: 1, title: 'Draft Companies (Amendment) Bill, 2025', status: 'Analysis Complete', submissions: 1345, endDate: '2025-08-31', progress: 100 },
+  { id: 2, title: 'Rules on Corporate Social Responsibility (CSR)', status: 'In Progress', submissions: 782, endDate: '2025-09-20', progress: 75 },
+  { id: 3, title: 'Insolvency & Bankruptcy Code (Second Amendment)', status: 'Completed', submissions: 2109, endDate: '2025-07-15', progress: 100 },
 ];
 
 const commentsData = {
@@ -23,8 +23,25 @@ const commentsData = {
   3: [{ id: 301, submitter: 'National Creditors Association', stakeholderType: 'Industry Body', date: '2025-07-10', stance: 'Opposed', summary: 'Opposes the proposed changes to the IBC.', qualityScore: 4.9, originalText: 'The proposed amendments to the IBC fundamentally weaken the position of financial creditors.', keywords: ['IBC', 'Creditor Rights'], consultationId: 3 }],
 };
 
-const wordCloudData = { 1: [{ text: 'Director Liability', value: 95 }, { text: 'Related Party Transactions', value: 88 }, { text: 'Corporate Governance', value: 85 }, { text: 'Compliance Costs', value: 75 }, { text: 'Minority Shareholders', value: 72 }, { text: 'Section 185', value: 68 }], 2: [], 3: [] };
+const wordCloudData = { 
+    1: {
+        'All': [{ text: 'Director Liability', value: 95 }, { text: 'Related Party Transactions', value: 88 }, { text: 'Corporate Governance', value: 85 }, { text: 'Compliance Costs', value: 75 }, { text: 'Minority Shareholders', value: 72 }, { text: 'Section 185', value: 68 }],
+        'Supportive': [{ text: 'Transparency', value: 80 }, { text: 'Accountability', value: 70 }, { text: 'Minority Shareholders', value: 65 }],
+        'Opposed': [{ text: 'Restrictive Conditions', value: 90 }, { text: 'Section 185', value: 85 }, { text: 'Startup Financing', value: 75 }],
+        'Concerned': [{ text: 'Compliance Costs', value: 85 }, { text: 'Small Businesses', value: 78 }, { text: 'Section 145', value: 70 }],
+        'Alternative Proposal': [{ text: 'Independent Directors', value: 92 }, { text: 'Centralized Pool', value: 85 }],
+        'Request for Clarification': [{ text: 'SBO', value: 88 }, { text: 'Ambiguity', value: 80 }],
+    }, 
+    2: {}, 
+    3: {} 
+};
+
 const trendAnalysisData = [{ name: '2021', 'Data Privacy Concerns': 230, 'CSR Compliance': 400 }, { name: '2022', 'Data Privacy Concerns': 280, 'CSR Compliance': 350 }, { name: '2023', 'Data Privacy Concerns': 250, 'CSR Compliance': 300 }, { name: '2024', 'Data Privacy Concerns': 310, 'CSR Compliance': 550 }, { name: '2025', 'Data Privacy Concerns': 450, 'CSR Compliance': 250 }];
+const accessLogs = [
+    {id: 1, date: '2025-09-20 01:17:05', ip: '103.22.201.12', location: 'Delhi, India', device: 'Chrome on Windows'},
+    {id: 2, date: '2025-09-19 11:45:12', ip: '103.22.201.12', location: 'Delhi, India', device: 'Chrome on Windows'},
+    {id: 3, date: '2025-09-18 09:22:34', ip: '45.115.18.2', location: 'Mumbai, India', device: 'Safari on macOS'},
+]
 
 // --- STYLING & CONFIG --- //
 const STANCE_COLORS = { 'Supportive': '#22c55e', 'Opposed': '#ef4444', 'Concerned': '#f97316', 'Alternative Proposal': '#3b82f6', 'Request for Clarification': '#a855f7' };
@@ -32,37 +49,24 @@ const STANCE_BG_COLORS = { 'Supportive': 'bg-green-100 text-green-800', 'Opposed
 
 // --- UI COMPONENTS --- //
 
-const Header = ({ setView, setIsAuthenticated, toggleSidebar, isSidebarOpen }) => {
+const Header = ({ setView, setIsAuthenticated, toggleSidebar, isSidebarOpen, userSession }) => {
     const [isProfileOpen, setIsProfileOpen] = useState(false);
     const profileRef = useRef(null);
 
     useEffect(() => {
-        const handleClickOutside = (event) => {
-            if (profileRef.current && !profileRef.current.contains(event.target)) {
-                setIsProfileOpen(false);
-            }
-        };
+        const handleClickOutside = (event) => { if (profileRef.current && !profileRef.current.contains(event.target)) { setIsProfileOpen(false); } };
         document.addEventListener("mousedown", handleClickOutside);
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, [profileRef]);
 
-    const handleMenuClick = (view) => {
-        setView(view);
-        setIsProfileOpen(false);
-    };
-
-    const handleLogout = () => {
-        setIsAuthenticated(false);
-        setIsProfileOpen(false);
-    };
+    const handleMenuClick = (view) => { setView(view); setIsProfileOpen(false); };
+    const handleLogout = () => { setIsAuthenticated(false); setIsProfileOpen(false); setView('auth'); };
 
     return (
-        <header className="bg-white border-b border-slate-200 flex items-center justify-between px-4 sm:px-6 py-3 fixed top-0 left-0 right-0 z-20 h-16">
+        <header className="bg-white border-b border-slate-200 flex items-center justify-between px-4 sm:px-6 py-3 fixed top-0 left-0 right-0 z-30 h-16">
             <div className="flex items-center">
-                <button onClick={toggleSidebar} className="lg:hidden mr-3 text-slate-600 hover:text-slate-800">
-                    {isSidebarOpen ? <X size={24}/> : <Menu size={24}/>}
-                </button>
-                <img src="/mca.png" alt="MCA Emblem" className="h-10 mr-2 sm:mr-4"/>
+                <button onClick={toggleSidebar} className="lg:hidden mr-3 text-slate-600 hover:text-slate-800">{isSidebarOpen ? <X size={24}/> : <Menu size={24}/>}</button>
+                <img src="https://raw.githubusercontent.com/Ishaan145/Saaransh/main/saaransh-app/public/mca.png" alt="MCA Emblem" className="h-10 mr-2 sm:mr-4"/>
                 <h1 className="text-lg sm:text-xl font-semibold text-slate-800">Project Saaransh</h1>
             </div>
             <div className="flex items-center space-x-2 sm:space-x-5">
@@ -70,13 +74,7 @@ const Header = ({ setView, setIsAuthenticated, toggleSidebar, isSidebarOpen }) =
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" />
                     <input type="text" placeholder="Search..." className="bg-slate-100 rounded-lg pl-10 pr-4 py-2 text-sm w-48 focus:outline-none focus:ring-2 focus:ring-blue-500" />
                 </div>
-                <button className="text-slate-500 hover:text-slate-800 relative p-1">
-                    <Bell size={20} />
-                    <span className="absolute -top-0 -right-0 flex h-3 w-3">
-                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-                        <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
-                    </span>
-                </button>
+                <button className="text-slate-500 hover:text-slate-800 relative p-1"><Bell size={20} /><span className="absolute -top-0 -right-0 flex h-3 w-3"><span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span><span className="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span></span></button>
                 <div className="relative" ref={profileRef}>
                     <div onClick={() => setIsProfileOpen(!isProfileOpen)} className="flex items-center space-x-2 cursor-pointer p-1">
                         <img src="https://placehold.co/40x40/E2E8F0/475569?text=I" alt="User Avatar" className="rounded-full h-9 w-9" />
@@ -86,11 +84,16 @@ const Header = ({ setView, setIsAuthenticated, toggleSidebar, isSidebarOpen }) =
                         </div>
                     </div>
                     {isProfileOpen && (
-                        <div className="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-lg border border-slate-200 overflow-hidden z-30">
+                        <div className="absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-lg border border-slate-200 overflow-hidden z-30">
+                            <div className="p-3 border-b border-slate-200">
+                                <p className="font-semibold text-slate-700">Ishaan Saxena</p>
+                                <p className="text-xs text-slate-500 truncate">ishaan.saxena@mca.gov.in</p>
+                                {userSession && <div className="mt-2 text-xs text-slate-500 flex items-center"><MapPin size={12} className="mr-1.5"/> Last login from {userSession.location}</div>}
+                            </div>
                             <div className="p-2">
                                 <a href="#" onClick={() => handleMenuClick('profile')} className="flex items-center px-3 py-2 text-sm text-slate-700 hover:bg-slate-100 rounded-md"><User size={16} className="mr-3" /> My Profile</a>
                                 <a href="#" onClick={() => handleMenuClick('settings')} className="flex items-center px-3 py-2 text-sm text-slate-700 hover:bg-slate-100 rounded-md"><Settings size={16} className="mr-3" /> User Settings</a>
-                                <a href="#" onClick={() => handleMenuClick('auth')} className="flex items-center px-3 py-2 text-sm text-slate-700 hover:bg-slate-100 rounded-md"><Shield size={16} className="mr-3" /> Authorizations</a>
+                                <a href="#" onClick={() => handleMenuClick('authorizations')} className="flex items-center px-3 py-2 text-sm text-slate-700 hover:bg-slate-100 rounded-md"><Shield size={16} className="mr-3" /> Authorizations</a>
                             </div>
                             <div className="border-t border-slate-200 p-2">
                                 <a href="#" onClick={handleLogout} className="flex items-center px-3 py-2 text-sm text-red-600 hover:bg-red-50 rounded-md"><LogOut size={16} className="mr-3" /> Logout</a>
@@ -107,13 +110,11 @@ const Sidebar = ({ selectedConsultation, setSelectedConsultation, view, setView,
     const handleLinkClick = (view, consultationId = null) => {
         setView(view);
         setSelectedConsultation(consultationId);
-        if (window.innerWidth < 1024) { // Close sidebar on mobile after click
-            setIsSidebarOpen(false);
-        }
+        if (window.innerWidth < 1024) { setIsSidebarOpen(false); }
     };
     
     return (
-        <aside className={`bg-slate-50 border-r border-slate-200 w-72 fixed top-16 left-0 h-[calc(100vh-4rem)] p-4 flex flex-col z-10 transform ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0 transition-transform duration-300 ease-in-out`}>
+        <aside className={`bg-slate-50 border-r border-slate-200 w-72 fixed top-16 left-0 h-[calc(100vh-4rem)] p-4 flex flex-col z-20 transform ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0 transition-transform duration-300 ease-in-out`}>
             <nav className="flex-grow overflow-y-auto">
                 <h2 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">Menu</h2>
                 <ul>
@@ -155,27 +156,36 @@ const StanceChart = ({ data, title = "Overall Stance" }) => (
 );
 
 const WordCloud = ({ data }) => {
-    if (!data || data.length === 0) {
+    const [filter, setFilter] = useState('All');
+    const filteredData = data[filter] || [];
+    
+    if (!data || Object.keys(data).length === 0) {
         return (
-            <div className="bg-white p-6 rounded-xl border border-slate-200 h-full">
+            <div className="bg-white p-6 rounded-xl border border-slate-200 h-full flex flex-col">
                 <h3 className="text-lg font-semibold text-slate-800 mb-4">Salient Themes</h3>
-                <div className="flex items-center justify-center h-full text-slate-500">No theme data available.</div>
+                <div className="flex-grow flex items-center justify-center h-full text-slate-500">No theme data available.</div>
             </div>
         );
     }
-    const maxVal = Math.max(...data.map(d => d.value));
+    
+    const maxVal = filteredData.length > 0 ? Math.max(...filteredData.map(d => d.value)) : 1;
     const sizes = ['text-sm', 'text-md', 'text-lg', 'text-xl', 'text-2xl', 'text-3xl'];
     
     return (
-        <div className="bg-white p-6 rounded-xl border border-slate-200 h-full">
-            <h3 className="text-lg font-semibold text-slate-800 mb-4">Salient Themes</h3>
-            <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 py-4">
-                {data.sort((a,b) => b.value - a.value).map(word => {
+        <div className="bg-white p-6 rounded-xl border border-slate-200 h-full flex flex-col">
+            <div className="flex justify-between items-center mb-4">
+                <h3 className="text-lg font-semibold text-slate-800">Salient Themes</h3>
+                 <div className="flex items-center bg-slate-100 rounded-lg p-1 text-xs">
+                    {['All', 'Supportive', 'Opposed'].map(stance => (<button key={stance} onClick={() => setFilter(stance)} className={`px-2 py-1 rounded-md whitespace-nowrap ${filter === stance ? 'bg-white shadow-sm' : 'text-slate-600'}`}>{stance}</button>))}
+                </div>
+            </div>
+            <div className="flex-grow flex flex-wrap items-center justify-center gap-x-4 gap-y-2 py-4">
+                {filteredData.length > 0 ? filteredData.sort((a,b) => b.value - a.value).map(word => {
                     const sizeIndex = Math.floor((word.value / maxVal) * (sizes.length -1));
                     const colorClasses = ['text-blue-600', 'text-slate-800', 'text-sky-600', 'text-slate-600'];
                     const color = colorClasses[Math.floor(Math.random() * colorClasses.length)];
-                    return (<span key={word.text} className={`${sizes[sizeIndex]} ${color} font-semibold transition-all hover:scale-110 cursor-pointer`}>{word.text}</span>);
-                })}
+                    return (<span key={word.text} title={`Frequency: ${word.value}`} className={`${sizes[sizeIndex]} ${color} font-semibold transition-all hover:scale-110 cursor-pointer`}>{word.text}</span>);
+                }) : <p className="text-slate-500">No themes for this stance.</p>}
             </div>
         </div>
     );
@@ -233,15 +243,48 @@ const SubmissionList = ({ comments, setSelectedComment, setView }) => {
   );
 };
 
-const DashboardView = ({ consultation, setSelectedComment, setView }) => (
-    <>
-        <h2 className="text-2xl font-bold text-slate-800 mb-2">{consultation.title}</h2>
-        <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-slate-500 mb-6">
-            <div className="flex items-center"><FileText size={16} className="mr-2"/>{consultation.submissions} Submissions</div>
-            <div className="flex items-center"><Calendar size={16} className="mr-2"/>Ends on {consultation.endDate}</div>
-            <div className="flex items-center"><span className={`w-2 h-2 rounded-full mr-2 ${consultation.status === 'In Progress' ? 'bg-yellow-500' : 'bg-green-500'}`}></span>{consultation.status}</div>
+const AnalysisProgress = ({ progress, status }) => {
+    const stages = ["Collecting Data", "Preprocessing", "Analyzing Stance", "Generating Summaries", "Creating Report"];
+    const currentStageIndex = Math.floor(progress / 100 * (stages.length -1));
+    return (
+        <div className="bg-white p-6 rounded-xl border border-slate-200">
+            <h3 className="text-lg font-semibold text-slate-800 mb-4">Analysis Progress</h3>
+            <div className="flex justify-between items-center mb-2">
+                <p className="text-sm font-medium text-slate-700">{status === 'Completed' || status === 'Analysis Complete' ? 'Completed' : stages[currentStageIndex]}</p>
+                <p className="text-sm font-bold text-blue-600">{progress}%</p>
+            </div>
+            <div className="w-full bg-slate-200 rounded-full h-2.5">
+                <div className="bg-blue-600 h-2.5 rounded-full" style={{width: `${progress}%`}}></div>
+            </div>
+             <div className="flex justify-between text-xs text-slate-500 mt-2">
+                {stages.map((stage, index) => <span key={stage} className={index <= currentStageIndex ? 'font-semibold' : ''}>{stage.split(' ')[0]}</span>)}
+            </div>
         </div>
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6"><StanceChart data={commentsData[consultation.id]}/><WordCloud data={wordCloudData[consultation.id]}/></div>
+    );
+};
+
+const DashboardView = ({ consultation, setSelectedComment, setView, setModalView }) => (
+    <>
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+            <div>
+                <h2 className="text-2xl font-bold text-slate-800 mb-2">{consultation.title}</h2>
+                <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-slate-500">
+                    <div className="flex items-center"><FileText size={16} className="mr-2"/>{consultation.submissions} Submissions</div>
+                    <div className="flex items-center"><Calendar size={16} className="mr-2"/>Ends on {consultation.endDate}</div>
+                    <div className="flex items-center"><span className={`w-2 h-2 rounded-full mr-2 ${consultation.status === 'In Progress' ? 'bg-yellow-500' : 'bg-green-500'}`}></span>{consultation.status}</div>
+                </div>
+            </div>
+            <button onClick={() => setModalView('generateReport')} className="bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-700 flex items-center whitespace-nowrap"><Download size={16} className="mr-2"/>Generate Report</button>
+        </div>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6">
+                <StanceChart data={commentsData[consultation.id]}/>
+                <WordCloud data={wordCloudData[consultation.id]}/>
+            </div>
+            <div className="lg:col-span-1">
+                 <AnalysisProgress progress={consultation.progress} status={consultation.status}/>
+            </div>
+        </div>
         <SubmissionList comments={commentsData[consultation.id]} setSelectedComment={setSelectedComment} setView={setView}/>
     </>
 );
@@ -291,21 +334,147 @@ const HomeView = ({ setView, setSelectedConsultation, setSelectedComment }) => {
     const allComments = useMemo(() => Object.values(commentsData).flat(), []);
     const highPriorityComments = allComments.filter(c => c.qualityScore >= 4.5).slice(0, 3);
     return (<div><h2 className="text-2xl font-bold text-slate-800 mb-6">Welcome back, Ishaan</h2>{showNotification && <SecurityNotification onDismiss={() => setShowNotification(false)} />}<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"><StatCard title="Total Submissions" value={allComments.length} icon={FileText} color="bg-blue-500" /><StatCard title="Total Consultations" value={consultations.length} icon={Users} color="bg-emerald-500" /><StatCard title="Active Consultations" value={consultations.filter(c => c.status === 'In Progress').length} icon={Clock} color="bg-amber-500" /><StatCard title="High Priority Items" value={highPriorityComments.length} icon={Bell} color="bg-red-500" /></div><div className="grid grid-cols-1 lg:grid-cols-5 gap-6 mt-6"><div className="lg:col-span-2"><StanceChart data={allComments} title="Overall Stance (All Time)" /></div><div className="lg:col-span-3"><div className="bg-white p-6 rounded-xl border border-slate-200 h-full"><h3 className="text-lg font-semibold text-slate-800 mb-4">High Priority Submissions</h3><div className="space-y-4">{highPriorityComments.map(c => (<div key={c.id} className="p-3 bg-slate-50 rounded-lg border border-slate-200"><div className="flex justify-between items-start"><p className="font-semibold text-slate-800">{c.submitter}</p><span className={`px-2 py-1 text-xs font-medium rounded-full ${STANCE_BG_COLORS[c.stance]}`}>{c.stance}</span></div><p className="text-sm text-slate-600 mt-2 truncate">{c.summary}</p><div className="flex justify-between items-center mt-3"><div className="flex items-center"><Star size={14} className="text-amber-400 fill-current mr-1" /><span className="text-sm font-bold text-slate-700">{c.qualityScore}</span></div><button onClick={() => { setSelectedComment(c); setView('detail'); setSelectedConsultation(c.consultationId)}} className="text-sm font-medium text-blue-600 hover:underline">View Details</button></div></div>))}</div></div></div></div></div>);};
-const UserProfileView = () => (<div><h2 className="text-2xl font-bold text-slate-800 mb-6">My Profile</h2><div className="grid grid-cols-1 lg:grid-cols-3 gap-6"><div className="lg:col-span-1"><div className="bg-white p-6 rounded-xl border border-slate-200 text-center"><img src="https://placehold.co/120x120/E2E8F0/475569?text=I" alt="User Avatar" className="rounded-full h-32 w-32 border-4 border-white shadow-md mx-auto -mt-16" /><h3 className="text-xl font-bold text-slate-800 mt-4">Ishaan Saxena</h3><p className="text-slate-500">Policy Analyst</p><button className="mt-4 w-full bg-blue-100 text-blue-700 font-semibold py-2 px-4 rounded-lg hover:bg-blue-200 text-sm">Change Profile Picture</button></div></div><div className="lg:col-span-2"><div className="bg-white p-6 rounded-xl border border-slate-200"><h3 className="text-lg font-semibold text-slate-800 mb-4">Account Details</h3><div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm"><div><p className="text-slate-500">Email:</p><p className="font-medium text-slate-800">ishaan.saxena@mca.gov.in</p></div><div><p className="text-slate-500">Employee ID:</p><p className="font-medium text-slate-800">MCA-AN-0845</p></div><div><p className="text-slate-500">Department:</p><p className="font-medium text-slate-800">Policy & Research Wing</p></div></div><h3 className="text-lg font-semibold text-slate-800 mt-6 mb-4">Security Settings</h3><div className="space-y-3"><button className="text-sm w-full text-left font-medium text-slate-700 p-3 bg-slate-50 rounded-lg border hover:bg-slate-100">Change Password</button><button className="text-sm w-full text-left font-medium text-slate-700 p-3 bg-slate-50 rounded-lg border hover:bg-slate-100">Manage Two-Factor Authentication (2FA)</button></div></div></div></div></div>);
+const UserProfileView = ({ setModalView }) => (<div><h2 className="text-2xl font-bold text-slate-800 mb-6">My Profile</h2><div className="grid grid-cols-1 lg:grid-cols-3 gap-6"><div className="lg:col-span-1"><div className="bg-white p-6 rounded-xl border border-slate-200 text-center"><img src="https://placehold.co/120x120/E2E8F0/475569?text=I" alt="User Avatar" className="rounded-full h-32 w-32 border-4 border-white shadow-md mx-auto -mt-16" /><h3 className="text-xl font-bold text-slate-800 mt-4">Ishaan Saxena</h3><p className="text-slate-500">Policy Analyst</p><button className="mt-4 w-full bg-blue-100 text-blue-700 font-semibold py-2 px-4 rounded-lg hover:bg-blue-200 text-sm">Change Profile Picture</button></div></div><div className="lg:col-span-2"><div className="bg-white p-6 rounded-xl border border-slate-200"><h3 className="text-lg font-semibold text-slate-800 mb-4">Account Details</h3><div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm"><div><p className="text-slate-500">Email:</p><p className="font-medium text-slate-800">ishaan.saxena@mca.gov.in</p></div><div><p className="text-slate-500">Employee ID:</p><p className="font-medium text-slate-800">MCA-AN-0845</p></div><div><p className="text-slate-500">Department:</p><p className="font-medium text-slate-800">Policy & Research Wing</p></div></div><h3 className="text-lg font-semibold text-slate-800 mt-6 mb-4">Security Settings</h3><div className="space-y-3"><button onClick={() => setModalView('changePassword')} className="text-sm w-full text-left font-medium text-slate-700 p-3 bg-slate-50 rounded-lg border hover:bg-slate-100">Change Password</button><button onClick={() => setModalView('manage2FA')} className="text-sm w-full text-left font-medium text-slate-700 p-3 bg-slate-50 rounded-lg border hover:bg-slate-100">Manage Two-Factor Authentication (2FA)</button></div></div></div></div></div>);
 const SettingsView = () => (<div><h2 className="text-2xl font-bold text-slate-800 mb-6">User Settings</h2><div className="bg-white p-8 rounded-xl border border-slate-200 max-w-2xl mx-auto"><h3 className="text-lg font-semibold text-slate-800 mb-4">Notifications</h3><div className="space-y-4"><div className="flex items-center justify-between p-4 bg-slate-50 rounded-lg"><label htmlFor="new-consultation" className="font-medium text-slate-700">Email for new consultations</label><div className="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in"><input type="checkbox" name="toggle" id="new-consultation" className="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer"/><label htmlFor="new-consultation" className="toggle-label block overflow-hidden h-6 rounded-full bg-slate-300 cursor-pointer"></label></div></div><div className="flex items-center justify-between p-4 bg-slate-50 rounded-lg"><label htmlFor="analysis-complete" className="font-medium text-slate-700">Notify when analysis is complete</label><div className="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in"><input type="checkbox" name="toggle" id="analysis-complete" className="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer" defaultChecked/><label htmlFor="analysis-complete" className="toggle-label block overflow-hidden h-6 rounded-full bg-slate-300 cursor-pointer"></label></div></div></div><style>{`.toggle-checkbox:checked { right: 0; border-color: #3b82f6; } .toggle-checkbox:checked + .toggle-label { background-color: #3b82f6; }`}</style><div className="border-t border-slate-200 mt-6 pt-6"><button className="bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-700">Save Changes</button></div></div></div>);
-const AuthorizationView = () => (<div><h2 className="text-2xl font-bold text-slate-800 mb-6">Authorizations & Permissions</h2><div className="bg-white p-8 rounded-xl border border-slate-200 max-w-2xl mx-auto"><div className="flex items-center space-x-4 p-4 bg-blue-50 border border-blue-200 rounded-lg"><Shield size={24} className="text-blue-600"/><div><h3 className="font-bold text-blue-800">Your Role: Policy Analyst</h3><p className="text-sm text-blue-700">This role grants you access to view and analyze consultation data.</p></div></div><div className="mt-6"><h4 className="text-md font-semibold text-slate-700 mb-3">Your Permissions:</h4><ul className="list-disc list-inside space-y-2 text-slate-600"><li>View all public submissions.</li><li>Access AI-generated summaries and stance analysis.</li><li>Generate and export reports for active consultations.</li><li className="text-slate-400">Manage user accounts (Admin permission required).</li><li className="text-slate-400">Initiate new consultations (Admin permission required).</li></ul></div></div></div>);
-const LoginView = ({ setIsAuthenticated }) => {
-    const [step, setStep] = useState(1); const [email, setEmail] = useState("ishaan.saxena@mca.gov.in"); const [password, setPassword] = useState("password"); const [showPassword, setShowPassword] = useState(false); const [otp, setOtp] = useState(""); const [error, setError] = useState("");
-    const handleNext = (e) => { e.preventDefault(); setError(""); if (step === 1 && email) setStep(2); if (step === 2 && password) setStep(3); if (step === 3 && otp === "123456") { setIsAuthenticated(true); } else if (step === 3) { setError("Invalid OTP. Please try again."); }};
-    return (<div className="min-h-screen bg-slate-100 flex flex-col justify-center items-center p-4"><div className="w-full max-w-md"><div className="text-center mb-8"><img src="/mca.png" alt="MCA Emblem" className="h-12 mx-auto mb-4"/><h1 className="text-3xl font-bold text-slate-800">Project Saaransh</h1><p className="text-slate-500">MCA E-Consultation Analysis Portal</p></div><div className="bg-white shadow-lg rounded-xl p-8"><h2 className="text-2xl font-semibold text-center text-slate-700 mb-2">Secure Sign In</h2>{error && <p className="text-red-500 text-sm text-center mb-4">{error}</p>}<form onSubmit={handleNext}>{step === 1 && (<div className="mb-4"><label className="block text-slate-700 text-sm font-bold mb-2" htmlFor="email">Email Address</label><div className="relative"><AtSign className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" /><input value={email} onChange={(e) => setEmail(e.target.value)} className="shadow-sm appearance-none border rounded-lg w-full py-2 pl-10 pr-3 text-slate-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500" id="email" type="email" placeholder="user@mca.gov.in" /></div></div>)}{step === 2 && (<div className="mb-6"><label className="block text-slate-700 text-sm font-bold mb-2" htmlFor="password">Password</label><div className="relative"><Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" /><input value={password} onChange={(e) => setPassword(e.target.value)} className="shadow-sm appearance-none border rounded-lg w-full py-2 pl-10 pr-10 text-slate-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500" id="password" type={showPassword ? "text" : "password"} placeholder="******************" /><button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600">{showPassword ? <EyeOff size={20}/> : <Eye size={20}/>}</button></div><a href="#" className="text-xs text-blue-600 hover:underline mt-2 inline-block">Forgot Password?</a></div>)}{step === 3 && (<div className="mb-4"><label className="block text-slate-700 text-sm font-bold mb-2" htmlFor="otp">One-Time Password (OTP)</label><p className="text-xs text-slate-500 mb-2">An OTP has been sent to your email. (Hint: 123456)</p><input value={otp} onChange={(e) => setOtp(e.target.value)} className="shadow-sm appearance-none border rounded-lg w-full py-2 px-3 text-slate-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500" id="otp" type="text" placeholder="Enter 6-digit OTP" /></div>)}<button className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg focus:outline-none focus:shadow-outline w-full" type="submit">{step === 1 && "Continue"}{step === 2 && "Sign In"}{step === 3 && "Verify & Sign In"}</button></form></div><p className="text-center text-slate-500 text-xs mt-6">This is a secure government system. All activities are monitored.</p><p className="text-center text-slate-500 text-xs mt-6">©2025 Ministry of Corporate Affairs. All rights reserved.</p></div></div>);};
+const AuthorizationView = () => (<div><h2 className="text-2xl font-bold text-slate-800 mb-6">Authorizations & Access Log</h2><div className="grid grid-cols-1 lg:grid-cols-3 gap-6"><div className="lg:col-span-1"><div className="bg-white p-6 rounded-xl border border-slate-200"><h3 className="text-lg font-semibold text-slate-800 mb-4">Your Role</h3><div className="flex items-center space-x-4 p-4 bg-blue-50 border border-blue-200 rounded-lg"><Shield size={24} className="text-blue-600 flex-shrink-0"/><div><h4 className="font-bold text-blue-800">Policy Analyst</h4><p className="text-sm text-blue-700">View and analyze consultation data.</p></div></div><div className="mt-4"><h4 className="text-md font-semibold text-slate-700 mb-3">Permissions:</h4><ul className="list-disc list-inside space-y-2 text-sm text-slate-600"><li>View all public submissions.</li><li>Access AI-generated analysis.</li><li>Generate and export reports.</li><li className="text-slate-400">Manage users (Admin only).</li><li className="text-slate-400">Initiate consultations (Admin only).</li></ul></div></div></div><div className="lg:col-span-2"><div className="bg-white p-6 rounded-xl border border-slate-200"><h3 className="text-lg font-semibold text-slate-800 mb-4">Recent Access Log</h3><div className="overflow-x-auto"><table className="w-full text-sm text-left text-slate-500">
+<thead className="text-xs text-slate-700 uppercase bg-slate-50"><tr><th className="px-4 py-3">Date & Time</th><th className="px-4 py-3">Location</th><th className="px-4 py-3 hidden sm:table-cell">Device</th><th className="px-4 py-3">IP Address</th></tr></thead>
+<tbody>{accessLogs.map(log=>(<tr key={log.id} className="bg-white border-b hover:bg-slate-50"><td className="px-4 py-3 font-medium text-slate-800">{log.date}</td><td className="px-4 py-3">{log.location}</td><td className="px-4 py-3 hidden sm:table-cell">{log.device}</td><td className="px-4 py-3 font-mono">{log.ip}</td></tr>))}</tbody></table></div></div></div></div></div>);
 
-// --- MAIN APP COMPONENT --- //
+// --- AUTHENTICATION & SECURITY COMPONENTS --- //
+
+const AuthView = ({ setIsAuthenticated, setView }) => {
+    const [authMode, setAuthMode] = useState('login'); // login, forgotPassword
+
+    const renderAuthContent = () => {
+        if (authMode === 'login') {
+            return <LoginPanel setIsAuthenticated={setIsAuthenticated} setAuthMode={setAuthMode} />;
+        }
+        if (authMode === 'forgotPassword') {
+            return <ForgotPasswordPanel setAuthMode={setAuthMode} />;
+        }
+    };
+
+    return (
+        <div className="min-h-screen bg-slate-100 flex items-center justify-center p-4" style={{backgroundImage: `url('https://www.toptal.com/designers/subtlepatterns/uploads/double-bubble-outline.png')`}}>
+            <div className="w-full max-w-4xl mx-auto grid grid-cols-1 lg:grid-cols-2 bg-white shadow-2xl rounded-2xl overflow-hidden">
+                <div className="p-8 sm:p-12">
+                     <img src="https://raw.githubusercontent.com/Ishaan145/Saaransh/main/saaransh-app/public/mca.png" alt="MCA Emblem" className="h-12 mb-6"/>
+                     {renderAuthContent()}
+                </div>
+                <div className="hidden lg:block bg-slate-800 p-12 text-white bg-cover bg-center" style={{backgroundImage: `url('https://images.unsplash.com/photo-1554224155-169544351720?q=80&w=2070&auto=format&fit=crop')`}}>
+                    <div className="bg-slate-900 bg-opacity-60 p-8 rounded-lg">
+                        <h2 className="text-3xl font-bold mb-4">Project Saaransh</h2>
+                        <p className="text-slate-300 mb-8">AI-Powered analysis for transparent and responsive corporate governance.</p>
+                        <div className="space-y-6">
+                            <div className="flex items-start"><CheckCircle className="h-6 w-6 text-emerald-400 mr-3 flex-shrink-0 mt-1" /><div><h3 className="font-semibold">Comprehensive Insights</h3><p className="text-slate-400 text-sm">Leverage state-of-the-art AI to understand public sentiment, stance, and key themes from thousands of submissions instantly.</p></div></div>
+                            <div className="flex items-start"><Shield className="h-6 w-6 text-emerald-400 mr-3 flex-shrink-0 mt-1" /><div><h3 className="font-semibold">Secure & Auditable</h3><p className="text-slate-400 text-sm">Built for government use with end-to-end security, access controls, and a fully auditable analysis trail.</p></div></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+};
+
+const LoginPanel = ({ setIsAuthenticated, setAuthMode }) => {
+    const [step, setStep] = useState(1); const [email] = useState("ishaan.saxena@mca.gov.in"); const [password] = useState("password"); const [showPassword, setShowPassword] = useState(false); const [otp, setOtp] = useState(""); const [error, setError] = useState("");
+    const handleNext = (e) => { e.preventDefault(); setError(""); if (step === 1 && email) setStep(2); if (step === 2 && password) setStep(3); if (step === 3 && otp === "123456") { setIsAuthenticated(true); } else if (step === 3) { setError("Invalid OTP. Please try again."); }};
+    return (<>
+        <h2 className="text-2xl font-bold text-slate-800 mb-2">Secure Sign In</h2>
+        <p className="text-slate-500 mb-6 text-sm">Enter your official credentials to access the portal.</p>
+        {error && <p className="text-red-500 text-sm text-center mb-4 bg-red-50 p-3 rounded-lg">{error}</p>}
+        <form onSubmit={handleNext} className="space-y-5">
+            {step === 1 && (<div><label className="block text-slate-700 text-sm font-bold mb-2" htmlFor="email">Email Address</label><div className="relative"><AtSign className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" /><input defaultValue={email} className="shadow-sm appearance-none border rounded-lg w-full py-2.5 pl-10 pr-3 text-slate-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500" id="email" type="email" /></div></div>)}
+            {step === 2 && (<div><label className="block text-slate-700 text-sm font-bold mb-2" htmlFor="password">Password</label><div className="relative"><Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" /><input defaultValue={password} className="shadow-sm appearance-none border rounded-lg w-full py-2.5 pl-10 pr-10 text-slate-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500" id="password" type={showPassword ? "text" : "password"} /><button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600">{showPassword ? <EyeOff size={20}/> : <Eye size={20}/>}</button></div></div>)}
+            {step === 3 && (<div><label className="block text-slate-700 text-sm font-bold mb-2" htmlFor="otp">One-Time Password (OTP)</label><p className="text-xs text-slate-500 mb-2">An OTP has been sent to your email. (Hint: 123456)</p><input value={otp} onChange={(e) => setOtp(e.target.value)} className="shadow-sm appearance-none border rounded-lg w-full py-2.5 px-3 text-slate-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500" id="otp" type="text" /></div>)}
+            <button className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 px-4 rounded-lg focus:outline-none focus:shadow-outline w-full" type="submit">{step === 1 && "Continue"}{step === 2 && "Sign In"}{step === 3 && "Verify & Sign In"}</button>
+            <div className="text-center"><a href="#" onClick={(e) => {e.preventDefault(); setAuthMode('forgotPassword')}} className="text-xs text-blue-600 hover:underline mt-2 inline-block">Forgot Password?</a></div>
+        </form>
+    </>);
+};
+
+const ForgotPasswordPanel = ({ setAuthMode }) => {
+    const [step, setStep] = useState(1); const [email] = useState("ishaan.saxena@mca.gov.in"); const [otp, setOtp] = useState(""); const [newPassword, setNewPassword] = useState(""); const [confirmPassword, setConfirmPassword] = useState(""); const [message, setMessage] = useState("");
+    const handleSubmit = (e) => { e.preventDefault(); setMessage(""); if (step === 1) { setMessage("An OTP has been sent to your email."); setStep(2); } if (step === 2 && otp === "123456") { setMessage(""); setStep(3); } if (step === 3 && newPassword === confirmPassword && newPassword) { setMessage("Password successfully reset! You can now log in."); setStep(4); }};
+    return (<>
+        <h2 className="text-2xl font-bold text-slate-800 mb-2">Reset Password</h2>
+        <p className="text-slate-500 mb-6 text-sm">{step < 4 ? "Enter your details to recover your account." : ""}</p>
+        {message && <p className={`text-sm text-center mb-4 p-3 rounded-lg ${step === 4 ? 'bg-green-50 text-green-700' : 'bg-blue-50 text-blue-700'}`}>{message}</p>}
+        <form onSubmit={handleSubmit} className="space-y-5">
+            {step === 1 && (<div><label className="block text-slate-700 text-sm font-bold mb-2" htmlFor="email-forgot">Email Address</label><div className="relative"><AtSign className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" /><input defaultValue={email} className="shadow-sm appearance-none border rounded-lg w-full py-2.5 pl-10 pr-3 text-slate-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500" id="email-forgot" type="email" /></div></div>)}
+            {step === 2 && (<div><label className="block text-slate-700 text-sm font-bold mb-2" htmlFor="otp-forgot">Enter OTP</label><input value={otp} onChange={(e) => setOtp(e.target.value)} className="shadow-sm appearance-none border rounded-lg w-full py-2.5 px-3 text-slate-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500" id="otp-forgot" type="text" /></div>)}
+            {step === 3 && (<><label className="block text-slate-700 text-sm font-bold mb-2">New Password</label><input value={newPassword} onChange={(e) => setNewPassword(e.target.value)} className="shadow-sm border rounded-lg w-full py-2.5 px-3" type="password" /><label className="block text-slate-700 text-sm font-bold mb-2 mt-4">Confirm New Password</label><input value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} className="shadow-sm border rounded-lg w-full py-2.5 px-3" type="password" /></>)}
+            {step < 4 && <button className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 px-4 rounded-lg w-full" type="submit">{step === 1 ? "Send OTP" : step === 2 ? "Verify OTP" : "Reset Password"}</button>}
+            <div className="text-center"><a href="#" onClick={(e) => {e.preventDefault(); setAuthMode('login')}} className="text-xs text-blue-600 hover:underline mt-2 inline-block">Back to Sign In</a></div>
+        </form>
+    </>);
+};
+
+const Modal = ({ children, onClose }) => (<div className="fixed inset-0 bg-black bg-opacity-50 z-40 flex justify-center items-center p-4" onClick={onClose}><div className="bg-white rounded-xl shadow-2xl w-full max-w-md" onClick={(e) => e.stopPropagation()}><div className="p-6">{children}</div></div></div>);
+const ChangePasswordModal = ({ onClose }) => (
+    <Modal onClose={onClose}>
+        <h3 className="text-lg font-bold text-slate-800 mb-4">Change Password</h3>
+        <form className="space-y-4" onSubmit={(e) => {e.preventDefault(); onClose();}}>
+            <div><label className="block text-sm font-medium text-slate-700">Old Password</label><input type="password" className="mt-1 block w-full px-3 py-2 bg-white border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"/></div>
+            <div><label className="block text-sm font-medium text-slate-700">New Password</label><input type="password" className="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm"/></div>
+            <div><label className="block text-sm font-medium text-slate-700">Confirm New Password</label><input type="password" className="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm"/></div>
+            <div className="flex justify-end gap-3 pt-4"><button type="button" onClick={onClose} className="bg-slate-100 text-slate-700 px-4 py-2 rounded-lg hover:bg-slate-200">Cancel</button><button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">Update Password</button></div>
+        </form>
+    </Modal>
+);
+const Manage2FAModal = ({ onClose }) => (
+    <Modal onClose={onClose}>
+        <h3 className="text-lg font-bold text-slate-800 mb-4">Two-Factor Authentication (2FA)</h3>
+        <div className="flex items-center p-4 bg-green-50 text-green-800 rounded-lg"><CheckCircle className="h-6 w-6 mr-3"/><p className="font-semibold">2FA is currently enabled on your account.</p></div>
+        <div className="mt-4 text-sm text-slate-600"><p>Two-factor authentication adds an extra layer of security to your account by requiring more than just a password to sign in. You currently have it configured with an authenticator app.</p></div>
+        <div className="flex flex-col sm:flex-row gap-3 pt-4 mt-4 border-t">
+            <button className="w-full bg-slate-100 text-slate-700 px-4 py-2 rounded-lg text-sm flex items-center justify-center hover:bg-slate-200"><Smartphone className="mr-2 h-4 w-4"/>View Recovery Codes</button>
+            <button className="w-full bg-red-100 text-red-700 px-4 py-2 rounded-lg text-sm hover:bg-red-200">Disable 2FA</button>
+            <button type="button" onClick={onClose} className="w-full bg-blue-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-700">Done</button>
+        </div>
+    </Modal>
+);
+const GenerateReportModal = ({ onClose, consultationTitle }) => {
+    const [format, setFormat] = useState('PDF');
+    return (
+        <Modal onClose={onClose}>
+            <h3 className="text-lg font-bold text-slate-800 mb-2">Generate Analysis Report</h3>
+            <p className="text-sm text-slate-500 mb-4">For: <span className="font-medium text-slate-700">{consultationTitle}</span></p>
+            <div>
+                <label className="block text-sm font-medium text-slate-700 mb-2">Select Format:</label>
+                <div className="flex gap-3">
+                    <button onClick={() => setFormat('PDF')} className={`w-full p-3 rounded-lg border-2 ${format === 'PDF' ? 'border-blue-600 bg-blue-50' : 'border-slate-300'}`}>PDF</button>
+                    <button onClick={() => setFormat('Excel')} className={`w-full p-3 rounded-lg border-2 ${format === 'Excel' ? 'border-blue-600 bg-blue-50' : 'border-slate-300'}`}>Excel</button>
+                </div>
+            </div>
+             <div className="flex justify-end gap-3 pt-4 mt-4"><button type="button" onClick={onClose} className="bg-slate-100 text-slate-700 px-4 py-2 rounded-lg hover:bg-slate-200">Cancel</button><button type="button" onClick={() => { alert(`Downloading ${format} report...`); onClose(); }} className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center"><Download size={16} className="mr-2"/>Download</button></div>
+        </Modal>
+    )
+};
+
+const AppContent = ({ view, state }) => {
+    const { setView, setSelectedConsultation, setSelectedComment, currentConsultation, setModalView, selectedComment } = state;
+    switch (view) {
+      case 'home': return <HomeView setView={setView} setSelectedConsultation={setSelectedConsultation} setSelectedComment={setSelectedComment} />;
+      case 'detail': return <DetailView comment={selectedComment} setView={setView} setSelectedConsultation={setSelectedConsultation} />;
+      case 'trends': return <TrendAnalysisView />;
+      case 'profile': return <UserProfileView setModalView={setModalView} />;
+      case 'settings': return <SettingsView />;
+      case 'authorizations': return <AuthorizationView />;
+      case 'dashboard':
+      default: return currentConsultation ? <DashboardView consultation={currentConsultation} setSelectedComment={setSelectedComment} setView={setView} setModalView={setModalView} /> : <HomeView setView={setView} setSelectedConsultation={setSelectedConsultation} setSelectedComment={setSelectedComment}/>;
+    }
+};
+
 export default function App() {
   const [selectedConsultation, setSelectedConsultation] = useState(1);
   const [selectedComment, setSelectedComment] = useState(null);
-  const [view, setView] = useState('home'); // home, dashboard, detail, trends, profile, settings, auth
+  const [view, setView] = useState('auth');
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [modalView, setModalView] = useState(null);
+  const [userSession, setUserSession] = useState(null);
+
   const currentConsultation = consultations.find(c => c.id === selectedConsultation);
   
   useEffect(() => {
@@ -313,31 +482,32 @@ export default function App() {
     else { document.body.style.overflow = 'auto'; }
   }, [isSidebarOpen]);
 
-  const renderContent = () => {
-    switch (view) {
-      case 'home': return <HomeView setView={setView} setSelectedConsultation={setSelectedConsultation} setSelectedComment={setSelectedComment} />;
-      case 'detail': return <DetailView comment={selectedComment} setView={setView} setSelectedConsultation={setSelectedConsultation} />;
-      case 'trends': return <TrendAnalysisView />;
-      case 'profile': return <UserProfileView />;
-      case 'settings': return <SettingsView />;
-      case 'auth': return <AuthorizationView />;
-      case 'dashboard':
-      default: return currentConsultation ? <DashboardView consultation={currentConsultation} setSelectedComment={setSelectedComment} setView={setView} /> : <HomeView setView={setView} setSelectedConsultation={setSelectedConsultation} setSelectedComment={setSelectedComment}/>;
+  useEffect(() => {
+    if (isAuthenticated && view === 'auth') {
+      setView('home');
+      // Simulate fetching user session data on login
+      setUserSession({ location: 'Delhi, India', lastLogin: new Date() });
     }
-  };
+  }, [isAuthenticated, view]);
 
-  if (!isAuthenticated) { return <LoginView setIsAuthenticated={setIsAuthenticated} /> }
+  if (!isAuthenticated) { return <AuthView setIsAuthenticated={setIsAuthenticated} setView={setView} /> }
 
   return (
     <div className="bg-slate-100 min-h-screen font-sans text-slate-800">
-      <Header setView={setView} setIsAuthenticated={setIsAuthenticated} toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} isSidebarOpen={isSidebarOpen}/>
+      {modalView === 'changePassword' && <ChangePasswordModal onClose={() => setModalView(null)} />}
+      {modalView === 'manage2FA' && <Manage2FAModal onClose={() => setModalView(null)} />}
+      {modalView === 'generateReport' && <GenerateReportModal onClose={() => setModalView(null)} consultationTitle={currentConsultation.title}/>}
+      
+      <Header setView={setView} setIsAuthenticated={setIsAuthenticated} toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} isSidebarOpen={isSidebarOpen} userSession={userSession}/>
       <Sidebar selectedConsultation={selectedConsultation} setSelectedConsultation={setSelectedConsultation} view={view} setView={setView} isSidebarOpen={isSidebarOpen} setIsSidebarOpen={setIsSidebarOpen} />
+      
       <main className="lg:pl-72 pt-16 transition-all duration-300 ease-in-out">
         <div className="p-4 sm:p-6 lg:p-8">
-            {renderContent()}
+            <AppContent view={view} state={{ setView, setSelectedConsultation, setSelectedComment, currentConsultation, setModalView, selectedComment }} />
         </div>
       </main>
-      {isSidebarOpen && <div onClick={() => setIsSidebarOpen(false)} className="fixed inset-0 bg-black bg-opacity-30 z-0 lg:hidden"></div>}
+      
+      {isSidebarOpen && <div onClick={() => setIsSidebarOpen(false)} className="fixed inset-0 bg-black bg-opacity-30 z-10 lg:hidden"></div>}
     </div>
   );
 }
