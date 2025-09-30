@@ -5,36 +5,36 @@ import { PieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, 
 
 const StakeholderAnalytics = () => {
   const stakeholderStats = [
-    { type: 'Law Firms', count: 245, percentage: 35, growth: '+12%' },
-    { type: 'Industry Bodies', count: 156, percentage: 22, growth: '+8%' },
-    { type: 'NGOs', count: 134, percentage: 19, growth: '+15%' },
-    { type: 'Individuals', count: 98, percentage: 14, growth: '+25%' },
-    { type: 'Consulting Firms', count: 67, percentage: 10, growth: '+5%' }
+    { type: 'Law Firms', count: 5, percentage: 35, growth: '+12%' },
+    { type: 'Industry Bodies', count: 6, percentage: 22, growth: '+8%' },
+    { type: 'NGOs', count: 4, percentage: 9, growth: '+15%' },
+    { type: 'Individuals', count: 8, percentage: 4, growth: '+25%' },
+    { type: 'Consulting Firms', count: 7, percentage: 10, growth: '+5%' }
   ];
 
   const engagementData = [
-    { name: 'Jan', submissions: 45, quality: 4.2 },
-    { name: 'Feb', submissions: 52, quality: 4.1 },
-    { name: 'Mar', submissions: 68, quality: 4.3 },
-    { name: 'Apr', submissions: 71, quality: 4.4 },
-    { name: 'May', submissions: 89, quality: 4.2 },
-    { name: 'Jun', submissions: 95, quality: 4.5 }
+    { name: 'Jan', submissions: 5, quality: 4.2 },
+    { name: 'Feb', submissions: 2, quality: 4.1 },
+    { name: 'Mar', submissions: 8, quality: 4.3 },
+    { name: 'Apr', submissions: 1, quality: 4.4 },
+    { name: 'May', submissions: 9, quality: 4.2 },
+    { name: 'Jun', submissions: 5, quality: 4.5 }
   ];
 
   const topStakeholders = [
-    { name: 'Apex Law Associates', submissions: 23, avgQuality: 4.8, type: 'Law Firm' },
-    { name: 'Federation of Indian Industries', submissions: 19, avgQuality: 4.6, type: 'Industry Body' },
-    { name: 'Good Governance Foundation', submissions: 17, avgQuality: 4.5, type: 'NGO' },
-    { name: 'Corporate Solutions Ltd', submissions: 15, avgQuality: 4.4, type: 'Consulting Firm' },
-    { name: 'National Trade Association', submissions: 14, avgQuality: 4.7, type: 'Industry Body' }
+    { name: 'Apex Law Associates', submissions: 3, avgQuality: 4.8, type: 'Law Firm' },
+    { name: 'Federation of Indian Industries', submissions: 9, avgQuality: 4.6, type: 'Industry Body' },
+    { name: 'Good Governance Foundation', submissions: 7, avgQuality: 4.5, type: 'NGO' },
+    { name: 'Corporate Solutions Ltd', submissions: 5, avgQuality: 4.4, type: 'Consulting Firm' },
+    { name: 'National Trade Association', submissions: 4, avgQuality: 4.7, type: 'Industry Body' }
   ];
 
   const sentimentByStakeholder = [
-    { name: 'Law Firms', supportive: 35, opposed: 45, concerned: 20 },
-    { name: 'Industry Bodies', supportive: 28, opposed: 52, concerned: 20 },
-    { name: 'NGOs', supportive: 65, opposed: 15, concerned: 20 },
-    { name: 'Individuals', supportive: 40, opposed: 30, concerned: 30 },
-    { name: 'Consulting Firms', supportive: 50, opposed: 25, concerned: 25 }
+    { name: 'Law Firms', supportive: 3, opposed: 5, concerned: 9 },
+    { name: 'Industry Bodies', supportive: 2, opposed: 5, concerned: 2 },
+    { name: 'NGOs', supportive: 6, opposed: 1, concerned: 2 },
+    { name: 'Individuals', supportive: 4, opposed: 3, concerned: 3 },
+    { name: 'Consulting Firms', supportive: 5, opposed: 2, concerned: 2 }
   ];
 
   const COLORS = ['#3B82F6', '#EF4444', '#F97316', '#22C55E', '#A855F7'];
