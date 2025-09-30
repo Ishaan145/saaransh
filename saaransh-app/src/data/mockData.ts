@@ -50,9 +50,9 @@ export const consultations: Consultation[] = [
     id: 1,
     title: 'Draft Companies (Amendment) Bill, 2025',
     status: 'Analysis Complete',
-    submissions: 1345,
+    submissions: 5,
     endDate: '2025-08-31',
-    progress: 100,
+    progress: 1,
     description: 'Proposed amendments to strengthen corporate governance and transparency',
     publishDate: '2025-07-15'
   },
@@ -60,7 +60,7 @@ export const consultations: Consultation[] = [
     id: 2,
     title: 'Rules on Corporate Social Responsibility (CSR)',
     status: 'In Progress',
-    submissions: 782,
+    submissions: 7,
     endDate: '2025-09-20',
     progress: 75,
     description: 'New guidelines for CSR implementation and reporting',
@@ -70,9 +70,9 @@ export const consultations: Consultation[] = [
     id: 3,
     title: 'Insolvency & Bankruptcy Code (Second Amendment)',
     status: 'Completed',
-    submissions: 2109,
+    submissions: 2,
     endDate: '2025-07-15',
-    progress: 100,
+    progress: 1,
     description: 'Amendments to improve the insolvency resolution process',
     publishDate: '2025-06-01'
   }
