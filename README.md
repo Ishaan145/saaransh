@@ -1,6 +1,6 @@
 # Project Saaransh: AI-Powered eConsultation Analysis for Democratic Governance
 
-## 🎯 Project Vision
+## Project Vision
 
 **Transforming Policy-Making Through AI: Ensuring Every Citizen Voice is Heard**
 
@@ -10,7 +10,7 @@ In democratic governance, public consultation is fundamental to creating effecti
 
 ---
 
-## 🌍 Problem Statement & Impact
+## Problem Statement & Impact
 
 ### The Challenge
 The MoCA's eConsultation module receives complex legal submissions in multiple languages from diverse stakeholders—individual citizens, SMEs, law firms, and corporations. Current manual analysis faces:
@@ -38,7 +38,7 @@ This challenge isn't unique to India. **187 countries** use public consultation 
 
 ---
 
-## 💡 Innovative Solution
+## Innovative Solution
 
 ### Core Innovation: Multi-Dimensional AI Analysis
 
@@ -129,7 +129,7 @@ Quality Score = f(
 
 ---
 
-## 🏗️ Technical Architecture
+## Technical Architecture
 
 ### System Design Philosophy
 **Microservices Architecture** for scalability, maintainability, and government security requirements
@@ -207,7 +207,7 @@ Quality Score = f(
 
 ---
 
-## 🚀 Key Features
+## Key Features
 
 ### For Government Officials (Admin Dashboard)
 
@@ -287,7 +287,7 @@ Per submission:
 
 ---
 
-## 📊 Performance Metrics & Results
+## Performance Metrics & Results
 
 ### AI Model Performance
 | Metric | Target | Achieved | Validation Method |
@@ -315,7 +315,7 @@ Per submission:
 
 ---
 
-## 🎨 User Interface Highlights
+## User Interface Highlights
 
 ### Dashboard Screenshots
 
@@ -352,7 +352,7 @@ Per submission:
 
 ---
 
-## 🔬 Innovation & Research Contributions
+## Innovation & Research Contributions
 
 ### Novel Technical Contributions
 
@@ -386,7 +386,7 @@ Per submission:
 
 ---
 
-## 🌟 Unique Value Propositions
+## Unique Value Propositions
 
 ### Why Project Saaransh Stands Out
 
@@ -422,7 +422,7 @@ Per submission:
 
 ---
 
-## 💰 Business Model & Sustainability
+## Business Model & Sustainability
 
 ### Cost Structure
 **Initial Development:** ₹5.1 crores
@@ -491,7 +491,7 @@ Per submission:
 
 ---
 
-## 🛣️ Implementation Roadmap
+## Implementation Roadmap
 
 ### Phase 1: Foundation (Months 1-6) ✅ Completed
 - [x] Problem analysis and requirements gathering
@@ -537,7 +537,7 @@ Per submission:
 
 ---
 
-## 👥 Team & Expertise
+## Team & Expertise
 
 ### Core Team
 **[Your Name]** - Technical Lead & AI/ML Engineer
@@ -579,7 +579,7 @@ Per submission:
 
 ---
 
-## 🎓 Learning & Development Journey
+## Learning & Development Journey
 
 ### Technical Skills Developed
 - **AI/ML:** Transfer learning, fine-tuning transformers, hybrid models
@@ -606,7 +606,7 @@ Per submission:
 
 ---
 
-## 🏆 Impact & Future Vision
+## Impact & Future Vision
 
 ### Immediate Impact (Year 1)
 - **Democratic Participation:** 100% of citizen feedback analyzed systematically
@@ -650,7 +650,7 @@ Per submission:
 
 ---
 
-## 🔗 Resources & Links
+## Resources & Links
 
 ### Code & Documentation
 - **GitHub Repository:** [github.com/yourusername/project-saaransh](https://github.com/yourusername/project-saaransh)
@@ -677,7 +677,7 @@ Per submission:
 
 ---
 
-## 📄 License & Open Source
+## License & Open Source
 
 This project is committed to transparency and open innovation:
 - **Core Platform:** MIT License (open source after pilot completion)
@@ -689,7 +689,7 @@ We believe in democratizing access to government AI technology while respecting 
 
 ---
 
-## 🙏 Acknowledgments
+## Acknowledgments
 
 - **Ministry of Corporate Affairs** for problem statement and domain expertise
 - **Smart India Hackathon 2025** for platform and opportunity
@@ -701,7 +701,7 @@ We believe in democratizing access to government AI technology while respecting 
 
 ---
 
-## 📞 Contact
+## Contact
 
 **Project Lead:** Ishaan Saxena
 - Email: 23mc3027@rgipt.ac.in
@@ -720,7 +720,7 @@ We believe in democratizing access to government AI technology while respecting 
 
 ---
 
-## 📊 Appendix: Technical Deep Dives
+## Appendix: Technical Deep Dives
 
 ### A. Model Architecture Details
 [Detailed BERT fine-tuning process, hyperparameters, training curves]
